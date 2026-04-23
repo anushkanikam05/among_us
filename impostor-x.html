@@ -1,0 +1,905 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>IMPOSTOR X – The Ultimate Deception Arena</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Exo+2:wght@400;600;700&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{--bg:#050510;--fg:#e8d5ff;--purple:#a855f7;--blue:#38bdf8;--pink:#ec4899;--green:#22c55e;--red:#ef4444;--orange:#f97316;--card:rgba(255,255,255,0.04);--radius:12px;}
+html,body{min-height:100vh;background:radial-gradient(ellipse at top,#0d0520 0%,#050510 60%,#000308 100%) fixed;color:var(--fg);font-family:'Orbitron','Exo 2',sans-serif;overflow-x:hidden;}
+#root{min-height:100vh;}
+::-webkit-scrollbar{width:5px;}::-webkit-scrollbar-track{background:#050510;}::-webkit-scrollbar-thumb{background:#7c3aed;border-radius:3px;}
+.glass{background:rgba(255,255,255,0.04);backdrop-filter:blur(16px);border:1px solid rgba(168,85,247,0.25);border-radius:var(--radius);}
+.glass-dark{background:rgba(0,0,0,0.55);backdrop-filter:blur(20px);border:1px solid rgba(168,85,247,0.2);border-radius:var(--radius);}
+.neon-purple{box-shadow:0 0 10px #a855f7,0 0 25px #a855f7,0 0 50px #a855f780;border-color:#a855f7!important;}
+.neon-red{box-shadow:0 0 10px #ef4444,0 0 25px #ef4444,0 0 50px #ef444480;border-color:#ef4444!important;}
+.neon-green{box-shadow:0 0 10px #22c55e,0 0 25px #22c55e,0 0 50px #22c55e80;border-color:#22c55e!important;}
+.tg-purple{text-shadow:0 0 10px #a855f7,0 0 20px #a855f7;}
+.tg-red{text-shadow:0 0 10px #ef4444,0 0 20px #ef4444;}
+.tg-green{text-shadow:0 0 10px #22c55e,0 0 20px #22c55e;}
+.tg-blue{text-shadow:0 0 10px #38bdf8,0 0 20px #38bdf8;}
+@keyframes float{0%,100%{transform:translateY(0);}50%{transform:translateY(-12px);}}
+.floating{animation:float 4s ease-in-out infinite;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:translateY(0);}}
+.fade-in{animation:fadeIn .4s ease forwards;}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1);}50%{opacity:.7;transform:scale(.95);}}
+.pulse{animation:pulse 1.5s ease-in-out infinite;}
+@keyframes tension{0%,100%{transform:scale(1);}50%{transform:scale(1.04);}}
+.tension{animation:tension .8s ease-in-out infinite;}
+@keyframes shake{0%,100%{transform:translateX(0);}10%,30%,50%,70%,90%{transform:translateX(-5px);}20%,40%,60%,80%{transform:translateX(5px);}}
+@keyframes scanLine{0%{top:-2px;}100%{top:100vh;}}
+.scan-line{position:fixed;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,rgba(168,85,247,.35),transparent);animation:scanLine 8s linear infinite;pointer-events:none;z-index:999;}
+@keyframes gradShift{0%,100%{background-position:0% 50%;}50%{background-position:100% 50%;}}
+.grad-title{background:linear-gradient(135deg,#a855f7 0%,#38bdf8 40%,#ec4899 80%,#a855f7 100%);background-size:200% 200%;-webkit-background-clip:text;-webkit-text-fill-color:transparent;animation:gradShift 4s ease infinite;}
+.btn{display:inline-flex;align-items:center;justify-content:center;cursor:pointer;border:none;outline:none;transition:transform .15s,box-shadow .15s;font-family:inherit;}
+.btn:hover:not(:disabled){transform:scale(1.03);}
+.btn:active:not(:disabled){transform:scale(.97);}
+.btn:disabled{opacity:.45;cursor:not-allowed;}
+.btn-primary{background:linear-gradient(135deg,#7c3aed,#a855f7,#ec4899);color:#fff;border-radius:var(--radius);font-weight:900;letter-spacing:.1em;text-transform:uppercase;box-shadow:0 0 20px rgba(168,85,247,.45);}
+.btn-danger{background:linear-gradient(135deg,#7f1d1d,#ef4444);color:#fff;border-radius:var(--radius);font-weight:900;letter-spacing:.1em;}
+.btn-success{background:linear-gradient(135deg,#14532d,#22c55e);color:#fff;border-radius:var(--radius);font-weight:900;letter-spacing:.1em;}
+.btn-ghost{background:rgba(168,85,247,.15);color:#a855f7;border:1px solid rgba(168,85,247,.35);border-radius:var(--radius);font-size:.8rem;}
+input[type=text],input[type=number]{background:rgba(0,0,0,.5);border:1px solid rgba(168,85,247,.45);border-radius:8px;color:#fff;font-family:inherit;outline:none;transition:border-color .2s,box-shadow .2s;}
+input[type=text]:focus,input[type=number]:focus{border-color:#a855f7;box-shadow:0 0 12px rgba(168,85,247,.35);}
+.bar{height:8px;background:#1a1a2e;border-radius:4px;overflow:hidden;}
+.bar-fill{height:100%;border-radius:4px;transition:width .3s;}
+canvas{position:fixed;inset:0;pointer-events:none;z-index:0;}
+.layer{position:relative;z-index:1;}
+.card-wrap{perspective:1000px;}
+.card-inner{transform-style:preserve-3d;transition:transform .6s cubic-bezier(.4,0,.2,1);}
+.card-inner.flipped{transform:rotateY(180deg);}
+.card-face{backface-visibility:hidden;-webkit-backface-visibility:hidden;position:absolute;inset:0;border-radius:8px;display:flex;align-items:center;justify-content:center;}
+.card-back-face{transform:rotateY(180deg);}
+@media(max-width:600px){.grid-6{grid-template-columns:repeat(3,1fr)!important;}.grid-4{grid-template-columns:repeat(4,1fr)!important;}}
+</style>
+</head>
+<body>
+<canvas id="bg"></canvas>
+<div id="root"></div>
+
+<script type="text/babel">
+// ── SOUND ENGINE ──────────────────────────────────────────
+class SoundEngine {
+  constructor(){this.ctx=null;this.master=null;this.bg=null;this.sfx=null;this.nodes=[];this.muted=false;this.bgMode=null;}
+  _ctx(){
+    if(!this.ctx){
+      this.ctx=new (window.AudioContext||window.webkitAudioContext)();
+      this.master=this.ctx.createGain();this.master.gain.value=.6;this.master.connect(this.ctx.destination);
+      this.bg=this.ctx.createGain();this.bg.gain.value=.28;this.bg.connect(this.master);
+      this.sfx=this.ctx.createGain();this.sfx.gain.value=.7;this.sfx.connect(this.master);
+    }
+    return this.ctx;
+  }
+  toggle(){this.muted=!this.muted;if(this.master)this.master.gain.value=this.muted?0:.6;return this.muted;}
+  isMuted(){return this.muted;}
+  _stopBg(){this.nodes.forEach(n=>{try{n.stop();}catch(e){}});this.nodes=[];this.bgMode=null;}
+  playCalm(){
+    if(this.bgMode==='calm')return;this._stopBg();this.bgMode='calm';
+    const ctx=this._ctx();
+    [55,110,164.81,220].forEach((f,i)=>{
+      const o=ctx.createOscillator(),g=ctx.createGain(),lfo=ctx.createOscillator(),lg=ctx.createGain();
+      o.type='sine';o.frequency.value=f;g.gain.value=.04/(i+1);
+      lfo.frequency.value=.1+i*.05;lg.gain.value=.01;
+      lfo.connect(lg);lg.connect(o.frequency);o.connect(g);g.connect(this.bg);o.start();lfo.start();
+      this.nodes.push(o,lfo);
+    });
+    const mel=[261.63,311.13,369.99,440,369.99,311.13];let i=0;
+    const play=()=>{if(this.bgMode!=='calm')return;const o=ctx.createOscillator(),g=ctx.createGain();o.type='triangle';o.frequency.value=mel[i%mel.length];g.gain.setValueAtTime(0,ctx.currentTime);g.gain.linearRampToValueAtTime(.04,ctx.currentTime+.1);g.gain.exponentialRampToValueAtTime(.001,ctx.currentTime+1.2);o.connect(g);g.connect(this.bg);o.start();o.stop(ctx.currentTime+1.5);i++;setTimeout(play,800);};
+    setTimeout(play,500);
+  }
+  playIntense(){
+    if(this.bgMode==='intense')return;this._stopBg();this.bgMode='intense';
+    const ctx=this._ctx();
+    [82.41,87.31,110,116.54].forEach((f,i)=>{
+      const o=ctx.createOscillator(),g=ctx.createGain(),lfo=ctx.createOscillator(),lg=ctx.createGain(),flt=ctx.createBiquadFilter();
+      o.type=i%2===0?'sawtooth':'square';o.frequency.value=f;g.gain.value=.025;
+      lfo.frequency.value=3+i;lg.gain.value=.5;flt.type='lowpass';flt.frequency.value=800;
+      lfo.connect(lg);lg.connect(o.frequency);o.connect(flt);flt.connect(g);g.connect(this.bg);o.start();lfo.start();
+      this.nodes.push(o,lfo);
+    });
+    let beat=0;
+    const pb=()=>{if(this.bgMode!=='intense')return;const o=ctx.createOscillator(),g=ctx.createGain();o.type='sine';o.frequency.value=beat%4===0?60:beat%2===0?80:70;g.gain.setValueAtTime(.07,ctx.currentTime);g.gain.exponentialRampToValueAtTime(.001,ctx.currentTime+.14);o.connect(g);g.connect(this.bg);o.start();o.stop(ctx.currentTime+.18);beat++;setTimeout(pb,300);};pb();
+  }
+  _tone(freq,type,dur,gainVal,dest){
+    try{const ctx=this._ctx(),o=ctx.createOscillator(),g=ctx.createGain();o.type=type;o.frequency.value=freq;g.gain.setValueAtTime(gainVal,ctx.currentTime);g.gain.exponentialRampToValueAtTime(.001,ctx.currentTime+dur);o.connect(g);g.connect(dest||this.sfx);o.start();o.stop(ctx.currentTime+dur+.05);}catch(e){}
+  }
+  playClick(){this._tone(700,'square',.07,.25);}
+  playSuccess(){[523,659,784,1047].forEach((f,i)=>setTimeout(()=>this._tone(f,'triangle',.4,.25),i*110));}
+  playFail(){[440,370,311,261].forEach((f,i)=>setTimeout(()=>this._tone(f,'sawtooth',.4,.18),i*140));}
+  playVoting(){[220,185,155,130].forEach((f,i)=>setTimeout(()=>this._tone(f,'sawtooth',.5,.18),i*200));}
+  playAlarm(){for(let i=0;i<3;i++)setTimeout(()=>{try{const ctx=this._ctx(),o=ctx.createOscillator(),g=ctx.createGain();o.type='sawtooth';o.frequency.setValueAtTime(880,ctx.currentTime);o.frequency.setValueAtTime(660,ctx.currentTime+.1);o.frequency.setValueAtTime(880,ctx.currentTime+.2);g.gain.setValueAtTime(.35,ctx.currentTime);g.gain.exponentialRampToValueAtTime(.001,ctx.currentTime+.32);o.connect(g);g.connect(this.sfx);o.start();o.stop(ctx.currentTime+.38);}catch(e){}},i*360);}
+  playSabotage(){try{const ctx=this._ctx(),o=ctx.createOscillator(),g=ctx.createGain(),lfo=ctx.createOscillator(),lg=ctx.createGain();o.type='sawtooth';o.frequency.value=220;lfo.frequency.value=8;lg.gain.value=50;lfo.connect(lg);lg.connect(o.frequency);g.gain.setValueAtTime(.25,ctx.currentTime);g.gain.exponentialRampToValueAtTime(.001,ctx.currentTime+1.5);o.connect(g);g.connect(this.sfx);o.start();lfo.start();o.stop(ctx.currentTime+1.55);lfo.stop(ctx.currentTime+1.55);}catch(e){}}
+  playEliminate(){for(let i=0;i<4;i++){const d=i*.1;try{const ctx=this._ctx(),o=ctx.createOscillator(),g=ctx.createGain();o.type='sine';o.frequency.value=80-i*10;g.gain.setValueAtTime(0,ctx.currentTime+d);g.gain.linearRampToValueAtTime(.38,ctx.currentTime+d+.05);g.gain.exponentialRampToValueAtTime(.001,ctx.currentTime+d+.5);o.connect(g);g.connect(this.sfx);o.start();o.stop(ctx.currentTime+d+.6);}catch(e){}}};
+}
+const sound = new SoundEngine();
+
+// ── CONSTANTS ──────────────────────────────────────────────
+const PLAYER_COLORS=['#a855f7','#38bdf8','#ec4899','#22c55e','#f97316','#eab308','#ef4444','#06b6d4','#8b5cf6','#10b981'];
+const FAKE_NAMES=['NebulaX','VoidRunner','CryptoStar','DarkMatter','Glitch404','NeonByte','QuantumQ','ShadowBot','StarKiller','ZeroDay','AlphaVoid','BinaryGhost','CyberWolf','DataPhantom','EchoNull'];
+const CREW_CHAT=['I was in electrical the whole time','I saw {name} vent!!','Let\'s skip this round...','I completed 3 tasks already','Something feels off about {name}','Trust me I\'m a crewmate','I swear on my life it wasn\'t me','Why is no one doing tasks??','I saw {name} near the body','I\'ll vouch for {name}'];
+const IMP_CHAT=['I was fixing wires in admin','Definately not me lol','Can we just skip already?','{name} has been acting sus all game','I have an alibi for last round','Focus on your tasks guys','Why would I kill {name}?','This is getting boring, just vote already'];
+
+function loadStats(){try{const s=localStorage.getItem('impostor-x-stats');if(s)return JSON.parse(s);}catch(e){}return{totalGames:0,wins:0,losses:0,currentStreak:0,bestStreak:0,impostorWins:0,crewmateWins:0};}
+function saveStats(s){try{localStorage.setItem('impostor-x-stats',JSON.stringify(s));}catch(e){}}
+
+// ── PARTICLE BACKGROUND ────────────────────────────────────
+function initCanvas(){
+  const canvas=document.getElementById('bg');
+  if(!canvas)return;
+  const ctx=canvas.getContext('2d');
+  const resize=()=>{canvas.width=window.innerWidth;canvas.height=window.innerHeight;};
+  resize();window.addEventListener('resize',resize);
+  const colors=['#a855f7','#38bdf8','#ec4899','#7c3aed','#0ea5e9'];
+  const stars=Array.from({length:120},()=>({x:Math.random()*window.innerWidth,y:Math.random()*window.innerHeight,r:Math.random()*1.4,t:Math.random()*Math.PI*2}));
+  let particles=[];let frame=0;let raf;
+  function loop(){
+    raf=requestAnimationFrame(loop);
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    stars.forEach(s=>{s.t+=.02;const a=.25+Math.sin(s.t)*.35;ctx.beginPath();ctx.arc(s.x,s.y,s.r,0,Math.PI*2);ctx.fillStyle=`rgba(255,255,255,${a})`;ctx.fill();});
+    frame++;
+    if(frame%4===0&&particles.length<50){const c=colors[Math.floor(Math.random()*colors.length)];particles.push({x:Math.random()*canvas.width,y:canvas.height+10,vx:(Math.random()-.5)*.7,vy:-(0.3+Math.random()*.7),size:1+Math.random()*2.5,color:c,life:0,maxLife:100+Math.random()*120});}
+    particles=particles.filter(p=>{p.life++;p.x+=p.vx;p.y+=p.vy;const prog=p.life/p.maxLife;const a=prog<.1?prog*10:prog>.8?(1-prog)*5:1;ctx.beginPath();ctx.arc(p.x,p.y,p.size,0,Math.PI*2);ctx.fillStyle=p.color+Math.floor(a*200).toString(16).padStart(2,'0');ctx.fill();return p.life<p.maxLife&&p.y>-20;});
+    for(let i=0;i<particles.length;i++){for(let j=i+1;j<particles.length;j++){const p1=particles[i],p2=particles[j],d=Math.hypot(p1.x-p2.x,p1.y-p2.y);if(d<70){ctx.beginPath();ctx.moveTo(p1.x,p1.y);ctx.lineTo(p2.x,p2.y);ctx.strokeStyle=p1.color+Math.floor((1-d/70)*25).toString(16).padStart(2,'0');ctx.lineWidth=.5;ctx.stroke();}}}
+  }
+  loop();
+  return ()=>{cancelAnimationFrame(raf);window.removeEventListener('resize',resize);};
+}
+
+// ── INTRO SCREEN ───────────────────────────────────────────
+const HOW_TO=[
+  {icon:'👤',title:'Enter Your Name',desc:'Choose your identity in the arena'},
+  {icon:'🎭',title:'Get Your Role',desc:'Secretly assigned Crewmate or Impostor'},
+  {icon:'⚡',title:'Complete Tasks',desc:'Mini-games, puzzles, and speed challenges'},
+  {icon:'👁️',title:'Watch for Sabotage',desc:'Impostors distort reality around you'},
+  {icon:'🗳️',title:'Vote Them Out',desc:'Dramatic voting with suspense reveals'},
+  {icon:'🏆',title:'Win the Arena',desc:'Catch the impostor or deceive everyone'},
+];
+const FEATURES=[{icon:'🧩',label:'Task Mini-Games'},{icon:'🎭',label:'Deception Modes'},{icon:'🔊',label:'Sound Sabotage'},{icon:'🤖',label:'Fake Multiplayer'},{icon:'🗳️',label:'Voting System'},{icon:'🌗',label:'Cyberpunk UI'},{icon:'⚡',label:'Chaos Events'},{icon:'📊',label:'Stats Tracker'}];
+
+function IntroScreen({onStart}){
+  const [name,setName]=React.useState('');
+  const [color,setColor]=React.useState(PLAYER_COLORS[0]);
+  const stats=loadStats();
+  const winRate=stats.totalGames>0?Math.round(stats.wins/stats.totalGames*100):0;
+
+  const start=()=>{if(!name.trim())return;sound.playClick();onStart(name.trim(),color);};
+  return(
+    <div className="layer" style={{minHeight:'100vh',padding:'0 16px 80px'}}>
+      <div className="scan-line"/>
+      {/* Hero */}
+      <div style={{textAlign:'center',paddingTop:60,paddingBottom:40}}>
+        <div style={{fontSize:12,letterSpacing:'0.4em',color:'#a855f7',textTransform:'uppercase',marginBottom:12,fontFamily:'Exo 2,sans-serif'}}>⚡ The Ultimate Deception Arena ⚡</div>
+        <h1 className="grad-title" style={{fontSize:'clamp(3rem,10vw,6.5rem)',fontWeight:900,letterSpacing:'-.02em',lineHeight:1,marginBottom:16}}>IMPOSTOR X</h1>
+        <p style={{color:'#9d7bb8',fontSize:'1.1rem',maxWidth:600,margin:'0 auto',lineHeight:1.7}}>
+          A social deception experience where <span style={{color:'#a855f7',fontWeight:700}}>trust is a weapon</span> and <span style={{color:'#ec4899',fontWeight:700}}>deception is an art</span>. Can you survive the arena?
+        </p>
+      </div>
+
+      {/* How to Play */}
+      <div style={{maxWidth:900,margin:'0 auto 48px'}}>
+        <h2 className="tg-purple" style={{textAlign:'center',fontSize:'1.3rem',fontWeight:700,color:'#c084fc',marginBottom:24}}>── HOW TO PLAY ──</h2>
+        <div style={{display:'grid',gridTemplateColumns:'repeat(3,1fr)',gap:12}} className="grid-6">
+          {HOW_TO.map((s,i)=>(
+            <div key={i} className="glass fade-in" style={{padding:'16px',animationDelay:`${i*80}ms`,transition:'all .25s'}}>
+              <div className="floating" style={{fontSize:28,marginBottom:8,animationDelay:`${i*.3}s`}}>{s.icon}</div>
+              <div style={{color:'#c084fc',fontWeight:700,fontSize:'.78rem',marginBottom:4}}>0{i+1}. {s.title}</div>
+              <div style={{color:'#7a6a8a',fontSize:'.72rem',lineHeight:1.5}}>{s.desc}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Feature Pills */}
+      <div style={{display:'flex',flexWrap:'wrap',justifyContent:'center',gap:10,maxWidth:700,margin:'0 auto 40px'}}>
+        {FEATURES.map((f,i)=>(
+          <div key={i} className="glass" style={{padding:'6px 14px',borderRadius:999,fontSize:'.75rem',display:'flex',gap:6,alignItems:'center',color:'#c084fc'}}>
+            <span>{f.icon}</span><span>{f.label}</span>
+          </div>
+        ))}
+      </div>
+
+      {/* Career Stats if exists */}
+      {stats.totalGames>0&&(
+        <div className="glass" style={{maxWidth:440,margin:'0 auto 32px',padding:16,display:'grid',gridTemplateColumns:'repeat(4,1fr)',gap:8,textAlign:'center'}}>
+          {[['Games',stats.totalGames,'#a855f7'],['Wins',stats.wins,'#22c55e'],['Win%',winRate+'%','#38bdf8'],['Streak',stats.currentStreak,'#f97316']].map(([l,v,c])=>(
+            <div key={l}><div style={{fontSize:'1.4rem',fontWeight:900,color:c}}>{v}</div><div style={{fontSize:'.65rem',color:'#7a6a8a'}}>{l}</div></div>
+          ))}
+        </div>
+      )}
+
+      {/* Entry Form */}
+      <div className="glass neon-purple" style={{maxWidth:420,margin:'0 auto',padding:32}}>
+        <h3 style={{textAlign:'center',fontWeight:700,color:'#c084fc',marginBottom:24,fontSize:'1.1rem'}}>Enter The Arena</h3>
+        
+        <div style={{marginBottom:20}}>
+          <div style={{fontSize:'.65rem',color:'#7a6a8a',marginBottom:8,letterSpacing:'.12em',textTransform:'uppercase'}}>Your Callsign</div>
+          <input type="text" value={name} onChange={e=>setName(e.target.value)} onKeyDown={e=>e.key==='Enter'&&start()} placeholder="Enter your name..." maxLength={16} style={{width:'100%',padding:'12px 16px',fontSize:'1rem'}}/>
+        </div>
+
+        <div style={{marginBottom:28}}>
+          <div style={{fontSize:'.65rem',color:'#7a6a8a',marginBottom:10,letterSpacing:'.12em',textTransform:'uppercase'}}>Your Color</div>
+          <div style={{display:'flex',flexWrap:'wrap',gap:8,justifyContent:'center'}}>
+            {PLAYER_COLORS.map(c=>(
+              <button key={c} onClick={()=>{setColor(c);sound.playClick();}} className="btn" style={{width:32,height:32,borderRadius:'50%',background:c,border:color===c?'3px solid #fff':'3px solid transparent',boxShadow:color===c?`0 0 12px ${c},0 0 24px ${c}`:'none',transform:color===c?'scale(1.2)':'scale(1)'}}/>
+            ))}
+          </div>
+        </div>
+
+        <div style={{display:'flex',alignItems:'center',gap:12,justifyContent:'center',marginBottom:24}}>
+          <div className="floating" style={{width:48,height:48,borderRadius:'50%',background:color+'25',border:`2px solid ${color}`,boxShadow:`0 0 14px ${color}`,display:'flex',alignItems:'center',justifyContent:'center',fontSize:24}}>👨‍🚀</div>
+          <div><div style={{fontWeight:700,color}}>{name||'Your Name'}</div><div style={{fontSize:'.7rem',color:'#7a6a8a'}}>Ready to deceive</div></div>
+        </div>
+
+        <button className="btn btn-primary" onClick={start} disabled={!name.trim()} style={{width:'100%',padding:'14px',fontSize:'1rem',borderRadius:12}}>
+          {name.trim()?'⚡ Enter The Arena ⚡':'Enter Your Name First'}
+        </button>
+      </div>
+    </div>
+  );
+}
+
+// ── LOBBY ──────────────────────────────────────────────────
+function LobbyScreen(){
+  return(
+    <div className="layer" style={{minHeight:'100vh',display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center'}}>
+      <div style={{textAlign:'center'}}>
+        <div className="floating" style={{fontSize:72,marginBottom:16}}>🚀</div>
+        <div style={{color:'#c084fc',fontWeight:700,fontSize:'1.3rem',marginBottom:16}}>Entering The Arena</div>
+        <div style={{display:'flex',gap:8,justifyContent:'center'}}>
+          {[0,1,2].map(i=><div key={i} className="pulse" style={{width:10,height:10,borderRadius:'50%',background:'#a855f7',animationDelay:`${i*.3}s`}}/>)}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ── ROLE REVEAL ────────────────────────────────────────────
+function RoleReveal({role,playerName,playerColor,specialEvent,onContinue}){
+  const [phase,setPhase]=React.useState('suspense');
+  const [count,setCount]=React.useState(3);
+  const isImp=role==='impostor';
+  React.useEffect(()=>{
+    sound.playVoting();
+    const t=setInterval(()=>setCount(c=>{if(c<=1){clearInterval(t);setPhase('reveal');isImp?sound.playAlarm():sound.playSuccess();return 0;}return c-1;}),1000);
+    return()=>clearInterval(t);
+  },[]);
+  React.useEffect(()=>{if(phase==='reveal'){const t=setTimeout(()=>setPhase('ready'),2000);return()=>clearTimeout(t);}});
+  const evLabel={normal:null,'double-impostor':'⚠️ DOUBLE IMPOSTOR ROUND','no-voting':'🚫 NO VOTING THIS ROUND','chaos-mode':'🔥 CHAOS MODE ACTIVATED'}[specialEvent];
+  return(
+    <div className="layer" style={{minHeight:'100vh',display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',padding:'0 16px'}}>
+      {phase==='suspense'&&(
+        <div className="fade-in" style={{textAlign:'center'}}>
+          <div style={{fontSize:'.75rem',color:'#7a6a8a',letterSpacing:'.2em',textTransform:'uppercase',marginBottom:16}}>Assigning Role...</div>
+          <div className="grad-title tension" style={{fontSize:'8rem',fontWeight:900}}>{count}</div>
+          <div style={{color:'#7a6a8a',marginTop:12,fontSize:'.85rem'}}>Your fate is being decided...</div>
+        </div>
+      )}
+      {(phase==='reveal'||phase==='ready')&&(
+        <div className="fade-in" style={{textAlign:'center'}}>
+          <div style={{width:260,height:360,margin:'0 auto 24px',borderRadius:20,display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',background:isImp?'linear-gradient(135deg,#1a0a0a,#2d0a1a)':'linear-gradient(135deg,#0a1a2d,#0a0a2d)',border:`2px solid ${isImp?'#ef4444':'#22c55e'}`,boxShadow:isImp?'0 0 40px rgba(239,68,68,.4)':'0 0 40px rgba(34,197,94,.4)',position:'relative',overflow:'hidden'}}>
+            <div style={{position:'absolute',top:12,left:12,width:28,height:28,borderTop:`2px solid ${isImp?'#ef4444':'#22c55e'}`,borderLeft:`2px solid ${isImp?'#ef4444':'#22c55e'}`}}/>
+            <div style={{position:'absolute',bottom:12,right:12,width:28,height:28,borderBottom:`2px solid ${isImp?'#ef4444':'#22c55e'}`,borderRight:`2px solid ${isImp?'#ef4444':'#22c55e'}`}}/>
+            <div className="floating" style={{fontSize:80,marginBottom:16}}>{isImp?'😈':'👨‍🚀'}</div>
+            <div className={isImp?'tg-red':'tg-green'} style={{fontSize:'2rem',fontWeight:900,letterSpacing:'.1em',color:isImp?'#ef4444':'#22c55e'}}>{isImp?'IMPOSTOR':'CREWMATE'}</div>
+            <div style={{fontSize:'.75rem',color:'#7a6a8a',marginTop:8}}>{isImp?'Deceive. Sabotage. Win.':'Complete tasks. Find the impostor.'}</div>
+          </div>
+          <div style={{display:'flex',alignItems:'center',gap:12,justifyContent:'center',marginBottom:evLabel?16:24}}>
+            <div style={{width:36,height:36,borderRadius:'50%',background:playerColor+'25',border:`2px solid ${playerColor}`,boxShadow:`0 0 10px ${playerColor}`}}/>
+            <div><div style={{fontWeight:700,color:playerColor}}>{playerName}</div><div style={{fontSize:'.7rem',color:'#7a6a8a'}}>{isImp?'You are among them...':'Trust no one. Even yourself.'}</div></div>
+          </div>
+          {evLabel&&<div style={{padding:'8px 16px',borderRadius:8,background:'rgba(239,68,68,.15)',border:'1px solid #ef4444',color:'#ef4444',fontSize:'.8rem',fontWeight:700,marginBottom:20}}>{evLabel}</div>}
+          <div className="glass" style={{maxWidth:300,margin:'0 auto 24px',padding:16,fontSize:'.8rem',textAlign:'left'}}>
+            <div style={{color:isImp?'#ef4444':'#22c55e',fontWeight:700,marginBottom:8}}>Your Objectives:</div>
+            <div style={{color:'#9d7bb8',lineHeight:1.8}}>
+              {isImp?<>• Blend in with crewmates<br/>• Sabotage tasks discreetly<br/>• Cast doubt on others<br/>• Don't get caught!</>
+                    :<>• Complete all assigned tasks<br/>• Watch for suspicious behavior<br/>• Vote out the impostor<br/>• Trust wisely!</>}
+            </div>
+          </div>
+          {phase==='ready'&&(
+            <button className={`btn ${isImp?'btn-danger':'btn-success'}`} onClick={()=>{sound.playClick();onContinue();}} style={{padding:'14px 40px',fontSize:'1rem',borderRadius:12}}>
+              {isImp?'😈 Start Deceiving':'👨‍🚀 Begin Mission'}
+            </button>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ── TASK: TYPING SPEED ─────────────────────────────────────
+const PROMPTS=['The impostor lurks in the shadows of space','Complete your tasks before time runs out','Trust no one in the deception arena','Venting is the fastest way to travel','The emergency meeting has been called'];
+function TypingTask({isImp,onComplete}){
+  const [prompt]=React.useState(()=>PROMPTS[Math.floor(Math.random()*PROMPTS.length)]);
+  const [typed,setTyped]=React.useState('');
+  const [start,setStart]=React.useState(null);
+  const [tl,setTl]=React.useState(15);
+  const [done,setDone]=React.useState(false);
+  const [sabotaged,setSabotaged]=React.useState(false);
+  const ref=React.useRef();
+  React.useEffect(()=>{ref.current?.focus();if(isImp){const t=setTimeout(()=>setSabotaged(true),5500);return()=>clearTimeout(t);}});
+  React.useEffect(()=>{if(done)return;if(tl<=0){finish();return;}const t=setTimeout(()=>setTl(l=>l-1),1000);return()=>clearTimeout(t);},[tl,done]);
+  const finish=(cur=typed)=>{setDone(true);const used=start?(Date.now()-start)/1000:15;const acc=prompt.length?cur.split('').filter((c,i)=>c===prompt[i]).length/prompt.length:0;const wpm=cur.trim().split(/\s+/).length/(used/60);onComplete(Math.min(100,Math.floor(acc*70+Math.min(30,wpm))));};
+  const change=v=>{if(!start)setStart(Date.now());const p=sabotaged?v.split('').reverse().join(''):v;setTyped(p);if(p===prompt)finish(p);};
+  const gc=(ch,i)=>{if(i>=typed.length)return'#555';return typed[i]===ch?'#22c55e':'#ef4444';};
+  return(
+    <div>
+      {sabotaged&&<div style={{background:'rgba(239,68,68,.15)',border:'1px solid #ef4444',borderRadius:8,padding:'8px 12px',color:'#ef4444',fontSize:'.78rem',textAlign:'center',marginBottom:12}}>⚠️ KEYBOARD SCRAMBLED — Impostor interference!</div>}
+      <div style={{display:'flex',justifyContent:'space-between',marginBottom:8,fontSize:'.8rem'}}>
+        <span style={{color:'#7a6a8a'}}>Time Left</span>
+        <span style={{fontWeight:900,color:tl<=5?'#ef4444':tl<=10?'#f97316':'#22c55e'}}>{tl}s</span>
+      </div>
+      <div className="bar" style={{marginBottom:16}}><div className="bar-fill" style={{width:`${typed.length/prompt.length*100}%`,background:'linear-gradient(90deg,#7c3aed,#ec4899)'}}/></div>
+      <div className="glass" style={{padding:16,fontFamily:'monospace',fontSize:'.95rem',lineHeight:1.8,letterSpacing:'.02em',marginBottom:12,userSelect:'none'}}>
+        {prompt.split('').map((c,i)=><span key={i} style={{color:gc(c,i)}}>{c}</span>)}
+      </div>
+      <input ref={ref} type="text" value={typed} onChange={e=>change(sabotaged?e.target.value.split('').reverse().join(''):e.target.value)} disabled={done} placeholder="Start typing..." spellCheck={false} style={{width:'100%',padding:'10px 14px',fontFamily:'monospace'}}/>
+    </div>
+  );
+}
+
+// ── TASK: MEMORY FLIP ─────────────────────────────────────
+const MEM_EMOJIS=['🚀','⚡','🔮','💀','🎭','👁️','🌌','🔴'];
+function MemoryTask({isImp,onComplete}){
+  const [cards,setCards]=React.useState([]);
+  const [sel,setSel]=React.useState([]);
+  const [matches,setMatches]=React.useState(0);
+  const [attempts,setAttempts]=React.useState(0);
+  const [tl,setTl]=React.useState(30);
+  const [done,setDone]=React.useState(false);
+  const [locked,setLocked]=React.useState(false);
+  React.useEffect(()=>{
+    const pairs=isImp?5:4;const emojis=MEM_EMOJIS.slice(0,pairs);
+    const deck=[...emojis,...emojis].sort(()=>Math.random()-.5).map((e,i)=>({id:i,emoji:e,flipped:false,matched:false}));
+    setCards(deck);
+    setCards(d=>d.map(c=>({...c,flipped:true})));
+    setTimeout(()=>setCards(d=>d.map(c=>({...c,flipped:false}))),1500);
+  },[]);
+  React.useEffect(()=>{if(done)return;if(tl<=0){finish();return;}const t=setTimeout(()=>setTl(l=>l-1),1000);return()=>clearTimeout(t);},[tl,done]);
+  React.useEffect(()=>{
+    if(sel.length===2){
+      setLocked(true);setAttempts(a=>a+1);
+      const [a,b]=sel;if(cards[a]?.emoji===cards[b]?.emoji){
+        setCards(c=>c.map(card=>card.id===a||card.id===b?{...card,matched:true}:card));
+        setMatches(m=>{const nm=m+1;if(nm===Math.floor(cards.length/2))setTimeout(()=>finish(nm),300);return nm;});
+        setSel([]);setLocked(false);
+      }else{setTimeout(()=>{setCards(c=>c.map(card=>(card.id===a||card.id===b)&&!card.matched?{...card,flipped:false}:card));setSel([]);setLocked(false);},800);}
+    }
+  },[sel]);
+  const finish=(fm=matches)=>{setDone(true);const total=Math.floor(cards.length/2);const acc=attempts>0?fm/attempts:0;onComplete(Math.floor(fm/total*60+acc*40));};
+  const flip=id=>{if(locked||done)return;const c=cards.find(c=>c.id===id);if(!c||c.flipped||c.matched||sel.length>=2)return;setCards(cs=>cs.map(c=>c.id===id?{...c,flipped:true}:c));setSel(s=>[...s,id]);};
+  const total=Math.floor(cards.length/2);
+  return(
+    <div>
+      <div style={{display:'flex',justifyContent:'space-between',marginBottom:8,fontSize:'.8rem'}}>
+        <span style={{color:'#7a6a8a'}}>Matches: <span style={{color:'#22c55e'}}>{matches}/{total}</span></span>
+        <span style={{fontWeight:900,color:tl<=10?'#ef4444':'#22c55e'}}>{tl}s</span>
+        <span style={{color:'#7a6a8a'}}>Tries: <span style={{color:'#a855f7'}}>{attempts}</span></span>
+      </div>
+      <div className="bar" style={{marginBottom:16}}><div className="bar-fill" style={{width:`${matches/total*100}%`,background:'linear-gradient(90deg,#7c3aed,#22c55e)'}}/></div>
+      <div style={{display:'grid',gridTemplateColumns:'repeat(4,1fr)',gap:8}} className="grid-4">
+        {cards.map(card=>(
+          <div key={card.id} className="card-wrap" style={{height:56}} onClick={()=>flip(card.id)}>
+            <div className={`card-inner${card.flipped||card.matched?' flipped':''}`} style={{position:'relative',width:'100%',height:'100%',cursor:'pointer'}}>
+              <div className="card-face" style={{background:'linear-gradient(135deg,#1e1b4b,#312e81)',border:'1px solid rgba(168,85,247,.4)'}}>
+                <span style={{color:'#a855f7',fontSize:'1.3rem'}}>?</span>
+              </div>
+              <div className="card-face card-back-face" style={{background:card.matched?'linear-gradient(135deg,#064e3b,#065f46)':'linear-gradient(135deg,#1e1b4b,#312e81)',border:`1px solid ${card.matched?'#22c55e':'rgba(168,85,247,.6)'}`,fontSize:'1.5rem'}}>
+                {card.emoji}
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// ── TASK: QUICK MATH ──────────────────────────────────────
+function genQ(d){const ops=d<2?['+','-']:['+','-','*'];const op=ops[Math.floor(Math.random()*ops.length)];let a,b;if(op==='+'){a=Math.floor(Math.random()*(10*d+10));b=Math.floor(Math.random()*(10*d+10));}else if(op==='-'){a=Math.floor(Math.random()*(10*d+10))+5;b=Math.floor(Math.random()*a);}else{a=Math.floor(Math.random()*12)+2;b=Math.floor(Math.random()*12)+2;}return{a,b,op,answer:op==='+'?a+b:op==='-'?a-b:a*b};}
+function MathTask({isImp,onComplete}){
+  const [qs]=React.useState(()=>Array.from({length:8},(_,i)=>genQ(i<3?1:i<6?2:3)));
+  const [cur,setCur]=React.useState(0);
+  const [inp,setInp]=React.useState('');
+  const [correct,setCorrect]=React.useState(0);
+  const [tl,setTl]=React.useState(20);
+  const [done,setDone]=React.useState(false);
+  const [flash,setFlash]=React.useState(null);
+  const ref=React.useRef();
+  React.useEffect(()=>{ref.current?.focus();},[cur]);
+  React.useEffect(()=>{if(done)return;if(tl<=0){finish();return;}const t=setTimeout(()=>setTl(l=>l-1),1000);return()=>clearTimeout(t);},[tl,done]);
+  const submit=()=>{
+    const val=parseInt(inp);if(isNaN(val))return;
+    const q=qs[cur];const ok=val===q.answer;
+    if(ok)setCorrect(c=>c+1);setFlash(ok?'correct':'wrong');
+    setTimeout(()=>{setFlash(null);if(cur+1>=qs.length)finish(ok?correct+1:correct);else{setCur(c=>c+1);setInp('');}},450);
+  };
+  const finish=(fc=correct)=>{setDone(true);onComplete(Math.floor(fc/qs.length*100));};
+  const q=qs[cur]||qs[0];const sym={'+':`+`,'-':'−','*':'×'};
+  return(
+    <div>
+      <div style={{display:'flex',justifyContent:'space-between',marginBottom:8,fontSize:'.8rem'}}>
+        <span style={{color:'#7a6a8a'}}>Q: <span style={{color:'#a855f7'}}>{cur+1}/{qs.length}</span></span>
+        <span style={{fontWeight:900,color:tl<=5?'#ef4444':'#22c55e'}}>{tl}s</span>
+        <span style={{color:'#7a6a8a'}}>Correct: <span style={{color:'#22c55e'}}>{correct}</span></span>
+      </div>
+      <div className="bar" style={{marginBottom:16}}><div className="bar-fill" style={{width:`${cur/qs.length*100}%`,background:'linear-gradient(90deg,#7c3aed,#ec4899)'}}/></div>
+      <div className="glass" style={{padding:28,textAlign:'center',marginBottom:16,border:`1px solid ${flash==='correct'?'#22c55e':flash==='wrong'?'#ef4444':'rgba(168,85,247,.25)'}`,boxShadow:flash==='correct'?'0 0 20px rgba(34,197,94,.3)':flash==='wrong'?'0 0 20px rgba(239,68,68,.3)':'none',transition:'all .2s'}}>
+        <div style={{fontSize:'3rem',fontWeight:900,fontFamily:'monospace',color:'#fff'}}>{q.a} <span style={{color:'#a855f7'}}>{sym[q.op]}</span> {q.b} <span style={{color:'#7a6a8a'}}>=</span> <span style={{color:'#ec4899'}}>?</span></div>
+        {flash==='correct'&&<div style={{color:'#22c55e',fontWeight:700,marginTop:8}}>✓ Correct!</div>}
+        {flash==='wrong'&&<div style={{color:'#ef4444',fontWeight:700,marginTop:8}}>✗ Wrong! Answer: {q.answer}</div>}
+      </div>
+      <div style={{display:'flex',gap:10}}>
+        <input ref={ref} type="number" value={inp} onChange={e=>setInp(e.target.value)} onKeyDown={e=>e.key==='Enter'&&inp&&submit()} disabled={done||!!flash} style={{flex:1,padding:'10px 14px',fontSize:'1.2rem',textAlign:'center',fontFamily:'monospace'}}/>
+        <button className="btn btn-primary" onClick={submit} disabled={!inp||done||!!flash} style={{padding:'10px 20px',borderRadius:10,fontSize:'1.1rem'}}>↵</button>
+      </div>
+    </div>
+  );
+}
+
+// ── TASK: REACTION CLICK ──────────────────────────────────
+function ReactionTask({isImp,onComplete}){
+  const [targets,setTargets]=React.useState([]);
+  const [hit,setHit]=React.useState(0);
+  const [missed,setMissed]=React.useState(0);
+  const [tl,setTl]=React.useState(15);
+  const [done,setDone]=React.useState(false);
+  const [feedback,setFeedback]=React.useState(null);
+  const areaRef=React.useRef();const idRef=React.useRef(0);
+  const colors=['#a855f7','#38bdf8','#ec4899','#22c55e','#f97316'];
+  React.useEffect(()=>{
+    if(done)return;
+    const si=setInterval(()=>{
+      const area=areaRef.current;if(!area)return;
+      const r=area.getBoundingClientRect();const size=44+Math.random()*26;
+      const isFake=isImp&&Math.random()<.28;
+      const t={id:idRef.current++,x:Math.random()*(r.width-size),y:Math.random()*(r.height-size),size,color:isFake?'#ef4444':colors[Math.floor(Math.random()*colors.length)],isFake,spawn:Date.now()};
+      setTargets(p=>[...p,t]);
+      setTimeout(()=>setTargets(p=>{const still=p.find(x=>x.id===t.id);if(still&&!done)setMissed(m=>m+1);return p.filter(x=>x.id!==t.id);}),1400);
+    },650);
+    return()=>clearInterval(si);
+  },[done]);
+  React.useEffect(()=>{if(done)return;if(tl<=0){finish();return;}const t=setTimeout(()=>setTl(l=>l-1),1000);return()=>clearTimeout(t);},[tl,done]);
+  const click=(t,e)=>{e.stopPropagation();if(done)return;const r=areaRef.current?.getBoundingClientRect();const fx=e.clientX-(r?.left||0),fy=e.clientY-(r?.top||0);setTargets(p=>p.filter(x=>x.id!==t.id));if(t.isFake){setFeedback({x:fx,y:fy,text:'-10 FAKE!',color:'#ef4444'});}else{setHit(h=>h+1);const rt=Date.now()-t.spawn;setFeedback({x:fx,y:fy,text:rt<300?'⚡PERFECT!':'+Hit',color:'#22c55e'});}setTimeout(()=>setFeedback(null),550);};
+  const finish=()=>{setDone(true);setTargets([]);const h=hit,m=missed;const acc=h+m>0?h/(h+m):0;onComplete(Math.floor(acc*100));};
+  return(
+    <div>
+      <div style={{display:'flex',justifyContent:'space-between',marginBottom:8,fontSize:'.8rem'}}>
+        <span style={{color:'#22c55e'}}>HIT: {hit}</span>
+        <span style={{fontWeight:900,color:tl<=5?'#ef4444':'#22c55e'}}>{tl}s</span>
+        <span style={{color:'#ef4444'}}>MISS: {missed}</span>
+      </div>
+      <div className="bar" style={{marginBottom:12}}><div className="bar-fill" style={{width:`${(1-tl/15)*100}%`,background:'linear-gradient(90deg,#22c55e,#f97316,#ef4444)',transition:'width 1s'}}/></div>
+      <div ref={areaRef} style={{position:'relative',height:190,borderRadius:12,background:'rgba(0,0,0,.55)',border:'1px solid rgba(168,85,247,.25)',overflow:'hidden'}}>
+        {targets.map(t=>(
+          <button key={t.id} onClick={e=>click(t,e)} className="btn" style={{position:'absolute',left:t.x,top:t.y,width:t.size,height:t.size,borderRadius:'50%',background:t.color+'35',border:`2px solid ${t.color}`,boxShadow:`0 0 14px ${t.color}80`,fontSize:t.size*.4,color:'#fff',fontWeight:900}}>
+            {t.isFake?'✗':'●'}
+          </button>
+        ))}
+        {feedback&&<div style={{position:'absolute',left:feedback.x,top:feedback.y,color:feedback.color,fontWeight:900,fontSize:'.85rem',transform:'translate(-50%,-50%)',pointerEvents:'none',textShadow:`0 0 8px ${feedback.color}`}}>{feedback.text}</div>}
+        {targets.length===0&&!done&&<div style={{position:'absolute',inset:0,display:'flex',alignItems:'center',justifyContent:'center',color:'#555',fontSize:'.8rem'}}>Targets incoming...</div>}
+      </div>
+      {isImp&&<div style={{textAlign:'center',fontSize:'.7rem',color:'rgba(239,68,68,.6)',marginTop:8}}>⚠️ RED targets are TRAPS — clicking them costs points!</div>}
+    </div>
+  );
+}
+
+// ── TASK: EMOJI DECODE ────────────────────────────────────
+const EMOJI_PZ=[
+  {clue:'🚀 + 👾 + 💀',answer:'space murder',options:['space murder','alien game','star wars','moon party']},
+  {clue:'👁️ + 🔍 + 🤥',answer:'find the liar',options:['find the liar','spy mission','see the truth','look harder']},
+  {clue:'🎭 + 🗡️ + 🏆',answer:'deception wins',options:['deception wins','acting trophy','drama club','fake success']},
+  {clue:'⚡ + 🗳️ + 😵',answer:'shock vote out',options:['shock vote out','lightning ballot','electric chair','power election']},
+  {clue:'😈 + 🎭 + 👨‍🚀',answer:'impostor among us',options:['impostor among us','devil acting','evil astronaut','costume chaos']},
+];
+function EmojiTask({isImp,onComplete}){
+  const [pzs]=React.useState(()=>[...EMOJI_PZ].sort(()=>Math.random()-.5).slice(0,4));
+  const [cur,setCur]=React.useState(0);const [correct,setCorrect]=React.useState(0);
+  const [tl,setTl]=React.useState(25);const [done,setDone]=React.useState(false);const [flash,setFlash]=React.useState(null);const [sel,setSel]=React.useState(null);
+  React.useEffect(()=>{if(done)return;if(tl<=0){finish();return;}const t=setTimeout(()=>setTl(l=>l-1),1000);return()=>clearTimeout(t);},[tl,done]);
+  const guess=opt=>{if(flash||done)return;setSel(opt);const ok=opt===pzs[cur].answer;if(ok)setCorrect(c=>c+1);setFlash(ok?'correct':'wrong');setTimeout(()=>{setFlash(null);setSel(null);if(cur+1>=pzs.length)finish(ok?correct+1:correct);else setCur(c=>c+1);},750);};
+  const finish=(fc=correct)=>{setDone(true);onComplete(Math.floor(fc/pzs.length*100));};
+  if(cur>=pzs.length)return null;
+  const pz=pzs[cur];const opts=isImp?[...pz.options].sort(()=>Math.random()-.5):pz.options;
+  return(
+    <div>
+      <div style={{display:'flex',justifyContent:'space-between',marginBottom:8,fontSize:'.8rem'}}>
+        <span style={{color:'#7a6a8a'}}>Puzzle <span style={{color:'#a855f7'}}>{cur+1}/{pzs.length}</span></span>
+        <span style={{fontWeight:900,color:tl<=8?'#ef4444':'#22c55e'}}>{tl}s</span>
+        <span style={{color:'#7a6a8a'}}>Score: <span style={{color:'#22c55e'}}>{correct}</span></span>
+      </div>
+      <div className="bar" style={{marginBottom:16}}><div className="bar-fill" style={{width:`${cur/pzs.length*100}%`,background:'linear-gradient(90deg,#7c3aed,#ec4899)'}}/></div>
+      <div className="glass" style={{padding:24,textAlign:'center',marginBottom:16,border:`1px solid ${flash==='correct'?'#22c55e':flash==='wrong'?'#ef4444':'rgba(168,85,247,.25)'}`,transition:'all .2s'}}>
+        <div style={{fontSize:'2.2rem',marginBottom:8}}>{pz.clue}</div>
+        <div style={{fontSize:'.75rem',color:'#7a6a8a'}}>Decode the emoji sequence</div>
+        {flash==='correct'&&<div style={{color:'#22c55e',fontWeight:700,marginTop:8}}>✓ Brilliant!</div>}
+        {flash==='wrong'&&<div style={{color:'#ef4444',fontWeight:700,marginTop:8}}>✗ Answer: <span style={{color:'#fff'}}>{pz.answer}</span></div>}
+      </div>
+      <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:8}}>
+        {opts.map(opt=>(
+          <button key={opt} onClick={()=>guess(opt)} disabled={!!flash||done} className="btn" style={{padding:'10px 12px',borderRadius:10,background:sel===opt?opt===pz.answer?'rgba(34,197,94,.2)':'rgba(239,68,68,.2)':'rgba(168,85,247,.1)',border:`1px solid ${sel===opt?opt===pz.answer?'#22c55e':'#ef4444':'rgba(168,85,247,.3)'}`,color:sel===opt?opt===pz.answer?'#22c55e':'#ef4444':'#fff',fontSize:'.8rem',fontFamily:'Exo 2,sans-serif',textAlign:'left'}}>
+            {opt}
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// ── TASK PHASE ─────────────────────────────────────────────
+const TASKS=[{type:'typing-speed',label:'Typing Speed',icon:'⌨️',desc:'Type the phrase as fast as you can'},{type:'memory-flip',label:'Memory Flip',icon:'🃏',desc:'Match all pairs from memory'},{type:'quick-math',label:'Quick Math',icon:'🧮',desc:'Solve equations against the clock'},{type:'reaction-click',label:'Reaction Click',icon:'⚡',desc:'Click the targets before they vanish'},{type:'emoji-decode',label:'Emoji Decode',icon:'🎭',desc:'Decode the emoji sequences'}];
+
+function TaskPhase({state,onTaskComplete}){
+  const [sel,setSel]=React.useState(null);
+  const [taskDone,setTaskDone]=React.useState(false);
+  const [taskScore,setTaskScore]=React.useState(0);
+  const [chat,setChat]=React.useState([]);
+  const [chatIn,setChatIn]=React.useState('');
+  const [sabVis,setSabVis]=React.useState(false);
+  const [sabType,setSabType]=React.useState(null);
+  const chatRef=React.useRef();
+  const isImp=state.playerRole==='impostor';
+  const active=state.fakePlayers.filter(p=>!p.isEliminated);
+
+  React.useEffect(()=>{
+    sound.playCalm();
+    active.slice(0,4).forEach((p,i)=>{
+      setTimeout(()=>{
+        const tmpl=p.role==='impostor'?IMP_CHAT:CREW_CHAT;
+        const msg=tmpl[Math.floor(Math.random()*tmpl.length)].replace('{name}',active[0]?.name||'someone');
+        setChat(c=>[...c,{id:`f${i}${Date.now()}`,sender:p.name,color:p.color,text:msg}]);
+      },p.typingDelay*(i+1));
+    });
+    if(isImp&&Math.random()>.4){
+      setTimeout(()=>{
+        const s=['blur','shake','invert'][Math.floor(Math.random()*3)];
+        setSabType(s);setSabVis(true);sound.playSabotage();
+        setTimeout(()=>{setSabVis(false);setSabType(null);},3000);
+      },5000+Math.random()*5000);
+    }
+  },[]);
+
+  React.useEffect(()=>{if(chatRef.current)chatRef.current.scrollTop=chatRef.current.scrollHeight;},[chat]);
+
+  const handleDone=score=>{setTaskDone(true);setTaskScore(score);score>=70?sound.playSuccess():score>=40?sound.playClick():sound.playFail();active.slice(0,2).forEach((p,i)=>setTimeout(()=>setChat(c=>[...c,{id:`end${i}`,sender:p.name,color:p.color,text:score>=70?'Nice work this round':'Hmm that was suspicious...'}]),i*800));};
+  const sendChat=()=>{if(!chatIn.trim())return;setChat(c=>[...c,{id:`p${Date.now()}`,sender:state.playerName,color:state.playerColor,text:chatIn.trim(),isPlayer:true}]);setChatIn('');};
+
+  const containerStyle={
+    filter:sabVis&&sabType==='blur'?'blur(5px)':sabVis&&sabType==='invert'?'invert(1)':'none',
+    animation:sabVis&&sabType==='shake'?'shake .5s ease-in-out infinite':'none',
+  };
+
+  return(
+    <div className="layer" style={{minHeight:'100vh',padding:'24px 16px 80px'}}>
+      {sabVis&&<div style={{position:'fixed',inset:0,zIndex:50,pointerEvents:'none',display:'flex',alignItems:'center',justifyContent:'center'}}><div className="glass-dark tg-red pulse" style={{padding:'12px 28px',border:'2px solid #ef4444',borderRadius:12,fontWeight:900,fontSize:'1.1rem',color:'#ef4444'}}>⚠️ SABOTAGE ACTIVE ⚠️</div></div>}
+      <div style={containerStyle}>
+        <div style={{maxWidth:620,margin:'0 auto'}}>
+          {/* Header */}
+          <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:20}}>
+            <div><div style={{fontSize:'.7rem',color:'#7a6a8a',fontFamily:'Exo 2,sans-serif'}}>Round {state.round}/{state.maxRounds}</div><div style={{fontWeight:900,color:'#c084fc',fontSize:'1.1rem'}}>Task Phase</div></div>
+            <div style={{display:'flex',alignItems:'center',gap:8}}>
+              <div style={{width:32,height:32,borderRadius:'50%',background:state.playerColor+'25',border:`2px solid ${state.playerColor}`}}/>
+              <span style={{fontWeight:700,color:state.playerColor,fontSize:'.85rem'}}>{state.playerName} {isImp?'😈':'👨‍🚀'}</span>
+            </div>
+          </div>
+
+          {/* Players */}
+          <div className="glass" style={{padding:'10px 14px',marginBottom:16,display:'flex',flexWrap:'wrap',gap:8}}>
+            <div style={{display:'flex',alignItems:'center',gap:4,fontSize:'.72rem'}}><div style={{width:8,height:8,borderRadius:'50%',background:state.playerColor}}/><span style={{color:state.playerColor}}>{state.playerName}</span></div>
+            {active.map(p=><div key={p.id} style={{display:'flex',alignItems:'center',gap:4,fontSize:'.72rem'}}><div style={{width:8,height:8,borderRadius:'50%',background:p.color}}/><span style={{color:p.color}}>{p.name}</span></div>)}
+          </div>
+
+          {/* Task */}
+          {!sel?(
+            <div className="fade-in">
+              <div style={{textAlign:'center',color:'#7a6a8a',fontSize:'.9rem',marginBottom:12}}>Choose Your Task</div>
+              <div style={{display:'flex',flexDirection:'column',gap:10,marginBottom:16}}>
+                {TASKS.map(t=>(
+                  <button key={t.type} onClick={()=>{setSel(t.type);sound.playClick();}} className="btn glass" style={{padding:'14px 16px',borderRadius:12,textAlign:'left',display:'flex',alignItems:'center',gap:12}}>
+                    <span style={{fontSize:'1.5rem'}}>{t.icon}</span>
+                    <div><div style={{fontWeight:700,color:'#c084fc',fontSize:'.9rem'}}>{t.label}</div><div style={{fontSize:'.72rem',color:'#7a6a8a'}}>{t.desc}</div></div>
+                  </button>
+                ))}
+              </div>
+            </div>
+          ):(
+            <div className="glass fade-in" style={{padding:20,marginBottom:16}}>
+              <div style={{display:'flex',alignItems:'center',gap:10,marginBottom:16}}>
+                <span style={{fontSize:'1.5rem'}}>{TASKS.find(t=>t.type===sel)?.icon}</span>
+                <div><div style={{fontWeight:900,color:'#c084fc'}}>{TASKS.find(t=>t.type===sel)?.label}</div><div style={{fontSize:'.72rem',color:'#7a6a8a'}}>{TASKS.find(t=>t.type===sel)?.desc}</div></div>
+              </div>
+              {taskDone?(
+                <div style={{textAlign:'center',padding:'20px 0'}}>
+                  <div style={{fontSize:56,marginBottom:12}}>{taskScore>=70?'🏆':taskScore>=40?'✅':'💀'}</div>
+                  <div style={{fontSize:'2.5rem',fontWeight:900,color:taskScore>=70?'#22c55e':taskScore>=40?'#f97316':'#ef4444',marginBottom:8}}>{taskScore}/100</div>
+                  <div style={{color:'#7a6a8a',marginBottom:20}}>{taskScore>=70?'Excellent work!':taskScore>=40?'Decent performance':'That was... suspicious'}</div>
+                  <button className="btn btn-primary" onClick={()=>onTaskComplete(taskScore,chat)} style={{padding:'12px 32px',borderRadius:12,fontSize:'.9rem'}}>
+                    {state.specialEvent==='no-voting'?'Next Round →':'🗳️ Proceed to Vote'}
+                  </button>
+                </div>
+              ):(
+                <>
+                  {sel==='typing-speed'&&<TypingTask isImp={isImp} onComplete={handleDone}/>}
+                  {sel==='memory-flip'&&<MemoryTask isImp={isImp} onComplete={handleDone}/>}
+                  {sel==='quick-math'&&<MathTask isImp={isImp} onComplete={handleDone}/>}
+                  {sel==='reaction-click'&&<ReactionTask isImp={isImp} onComplete={handleDone}/>}
+                  {sel==='emoji-decode'&&<EmojiTask isImp={isImp} onComplete={handleDone}/>}
+                </>
+              )}
+            </div>
+          )}
+
+          {/* Chat */}
+          <div className="glass" style={{overflow:'hidden'}}>
+            <div style={{padding:'8px 14px',borderBottom:'1px solid rgba(168,85,247,.15)',display:'flex',alignItems:'center',gap:8}}>
+              <div style={{width:7,height:7,borderRadius:'50%',background:'#22c55e',animation:'pulse 1s infinite'}}/>
+              <span style={{fontSize:'.7rem',color:'#7a6a8a',letterSpacing:'.1em',textTransform:'uppercase'}}>Crew Chat</span>
+            </div>
+            <div ref={chatRef} style={{height:120,overflowY:'auto',padding:12,display:'flex',flexDirection:'column',gap:6}}>
+              {chat.map(m=>(
+                <div key={m.id} style={{fontSize:'.75rem',fontFamily:'Exo 2,sans-serif'}}>
+                  <span style={{color:m.color,fontWeight:700}}>{m.sender}: </span>
+                  <span style={{color:'#d0c0e0'}}>{m.text}</span>
+                </div>
+              ))}
+              {chat.length===0&&<div style={{color:'#555',fontSize:'.75rem',textAlign:'center',marginTop:20}}>Players are joining...</div>}
+            </div>
+            <div style={{padding:'10px 12px',borderTop:'1px solid rgba(168,85,247,.15)',display:'flex',gap:8}}>
+              <input type="text" value={chatIn} onChange={e=>setChatIn(e.target.value)} onKeyDown={e=>e.key==='Enter'&&sendChat()} placeholder="Chat with players..." maxLength={60} style={{flex:1,padding:'6px 10px',fontSize:'.78rem'}}/>
+              <button onClick={sendChat} className="btn btn-ghost" style={{padding:'6px 12px'}}>Send</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ── VOTING PHASE ──────────────────────────────────────────
+function VotingPhase({state,onVoteComplete}){
+  const [phase,setPhase]=React.useState('intro');
+  const [voted,setVoted]=React.useState(null);
+  const [fvotes,setFvotes]=React.useState({});
+  const [elim,setElim]=React.useState(null);
+  const [pvout,setPvout]=React.useState(false);
+  const isImp=state.playerRole==='impostor';
+  const active=state.fakePlayers.filter(p=>!p.isEliminated);
+  React.useEffect(()=>{sound.playIntense();sound.playVoting();const t=setTimeout(()=>setPhase('voting'),2000);return()=>clearTimeout(t);});
+  React.useEffect(()=>{if(phase!=='voting')return;const t=setTimeout(()=>{if(!voted)count(null);},20000);return()=>clearTimeout(t);},[phase]);
+
+  const count=vid=>{
+    setPhase('counting');
+    const v={};if(vid)v[vid]=[state.playerName];
+    active.forEach(p=>{
+      const all=[...active.filter(x=>x.id!==p.id).map(x=>x.id),'player'];
+      let tgt;
+      if(p.role==='impostor'){const crew=active.filter(x=>x.role==='crewmate');tgt=crew.length>0?crew[Math.floor(Math.random()*crew.length)].id:'player';if(isImp&&Math.random()>.5)tgt='player';}
+      else{const sb=[...active].sort((a,b)=>b.suspicion-a.suspicion);tgt=Math.random()>.3?sb[0]?.id||all[0]:all[Math.floor(Math.random()*all.length)];}
+      if(!v[tgt])v[tgt]=[];v[tgt].push(p.name);
+    });
+    setFvotes(v);
+    setTimeout(()=>{
+      setPhase('reveal');
+      let maxV=0,elimId='';for(const [id,voters] of Object.entries(v)){if(voters.length>maxV){maxV=voters.length;elimId=id;}}
+      if(elimId==='player'){setPvout(true);sound.playEliminate();}
+      else if(elimId){const e=active.find(p=>p.id===elimId);if(e){setElim(e);sound.playEliminate();}}
+    },3000);
+  };
+
+  const vote=id=>{if(voted||phase!=='voting')return;sound.playClick();setVoted(id);count(id);};
+
+  return(
+    <div className="layer" style={{minHeight:'100vh',display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',padding:'0 16px 60px'}}>
+      {phase==='intro'&&(
+        <div className="fade-in" style={{textAlign:'center'}}>
+          <div className="floating tg-red tension" style={{fontSize:72,marginBottom:12}}>⚠️</div>
+          <div className="tg-red" style={{fontSize:'2.5rem',fontWeight:900,color:'#ef4444'}}>EMERGENCY MEETING</div>
+          <div style={{color:'#7a6a8a',marginTop:8,fontFamily:'Exo 2,sans-serif'}}>Voting phase begins shortly...</div>
+        </div>
+      )}
+      {phase==='voting'&&(
+        <div style={{width:'100%',maxWidth:520}} className="fade-in">
+          <h2 className="tg-red" style={{fontSize:'1.6rem',fontWeight:900,textAlign:'center',marginBottom:6,color:'#ef4444'}}>WHO IS THE IMPOSTOR?</h2>
+          <p style={{textAlign:'center',fontSize:'.8rem',color:'#7a6a8a',marginBottom:20,fontFamily:'Exo 2,sans-serif'}}>{isImp?'Cast suspicion away from yourself!':'Vote wisely — the crew depends on you'}</p>
+          <div style={{display:'flex',flexDirection:'column',gap:10,marginBottom:12}}>
+            {active.map(p=>(
+              <button key={p.id} onClick={()=>vote(p.id)} disabled={!!voted} className="btn glass" style={{padding:'12px 16px',borderRadius:12,display:'flex',alignItems:'center',justifyContent:'space-between',border:voted===p.id?`1px solid #ef4444`:'1px solid rgba(168,85,247,.25)',boxShadow:voted===p.id?'0 0 15px rgba(239,68,68,.35)':'none'}}>
+                <div style={{display:'flex',alignItems:'center',gap:10}}>
+                  <div style={{width:38,height:38,borderRadius:'50%',background:p.color+'25',border:`2px solid ${p.color}`,boxShadow:`0 0 8px ${p.color}60`,display:'flex',alignItems:'center',justifyContent:'center',fontSize:20}}>👤</div>
+                  <div style={{textAlign:'left'}}>
+                    <div style={{fontWeight:700,color:p.color,fontSize:'.9rem'}}>{p.name}</div>
+                    <div style={{fontSize:'.65rem',color:'#7a6a8a',fontFamily:'monospace'}}>Suspicion: {'▓'.repeat(Math.floor(p.suspicion/20))}{'░'.repeat(5-Math.floor(p.suspicion/20))} {p.suspicion}%</div>
+                  </div>
+                </div>
+                <span style={{opacity:.5,fontSize:20}}>🗳️</span>
+              </button>
+            ))}
+          </div>
+          <button onClick={()=>count(null)} disabled={!!voted} className="btn" style={{width:'100%',padding:'10px',borderRadius:10,background:'transparent',border:'1px solid #333',color:'#7a6a8a',fontSize:'.8rem',fontFamily:'Exo 2,sans-serif'}}>Skip Vote (unsure)</button>
+          <div style={{textAlign:'center',marginTop:10,fontSize:'.7rem',color:'#555',fontFamily:'Exo 2,sans-serif'}}><span style={{color:'#eab308'}}>⚡</span> Vote expires in 20 seconds</div>
+        </div>
+      )}
+      {phase==='counting'&&(
+        <div style={{width:'100%',maxWidth:520}} className="fade-in">
+          <h2 style={{fontWeight:900,textAlign:'center',color:'#c084fc',marginBottom:24,fontSize:'1.5rem'}}>Counting Votes...</h2>
+          <div style={{display:'flex',flexDirection:'column',gap:12}}>
+            {Object.entries(fvotes).map(([id,voters])=>{
+              const tgt=id==='player'?{name:state.playerName,color:state.playerColor}:active.find(p=>p.id===id);
+              if(!tgt)return null;
+              return(
+                <div key={id} className="glass" style={{padding:'12px 16px'}}>
+                  <div style={{display:'flex',justifyContent:'space-between',marginBottom:8}}>
+                    <span style={{fontWeight:700,color:tgt.color}}>{tgt.name}</span>
+                    <span style={{fontWeight:900,color:'#fff'}}>{voters.length} votes</span>
+                  </div>
+                  <div className="bar"><div className="bar-fill" style={{width:`${voters.length/(active.length+1)*100}%`,background:'linear-gradient(90deg,#ef4444,#a855f7)',boxShadow:'0 0 8px rgba(239,68,68,.4)',transition:'width 1.2s .3s'}}/></div>
+                  <div style={{fontSize:'.65rem',color:'#7a6a8a',marginTop:6,fontFamily:'Exo 2,sans-serif'}}>by: {voters.join(', ')}</div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
+      {phase==='reveal'&&(
+        <div style={{textAlign:'center',maxWidth:480}} className="fade-in">
+          {pvout?(
+            <>
+              <div style={{fontSize:72,marginBottom:16}} className="floating">💀</div>
+              <h2 className="tg-red" style={{fontSize:'2rem',fontWeight:900,color:'#ef4444',marginBottom:8}}>YOU WERE VOTED OUT</h2>
+              <p style={{color:'#7a6a8a',marginBottom:12,fontFamily:'Exo 2,sans-serif'}}>The crew suspected you and voted you out.</p>
+              <div className="glass" style={{padding:14,marginBottom:24,fontSize:'.85rem',fontFamily:'Exo 2,sans-serif'}}>
+                <span style={{color:'#a855f7'}}>Your role was: </span>
+                <span style={{fontWeight:900,color:isImp?'#ef4444':'#22c55e'}}>{isImp?'😈 IMPOSTOR':'👨‍🚀 CREWMATE'}</span>
+                {!isImp&&<div style={{color:'#ef4444',marginTop:6}}>The real impostor is still out there...</div>}
+              </div>
+            </>
+          ):elim?(
+            <>
+              <div style={{fontSize:64,marginBottom:16}}>{elim.role==='impostor'?'🎉':'😢'}</div>
+              <h2 style={{fontSize:'2rem',fontWeight:900,color:elim.role==='impostor'?'#22c55e':'#f97316',marginBottom:12}}>{elim.name} was eliminated!</h2>
+              <div className="glass" style={{padding:14,marginBottom:24,fontSize:'1.1rem',fontWeight:700,color:elim.role==='impostor'?'#22c55e':'#ef4444'}}>
+                {elim.role==='impostor'?'✓ They WERE the impostor!':'✗ They were NOT the impostor...'}
+              </div>
+            </>
+          ):(
+            <>
+              <div style={{fontSize:64,marginBottom:16}}>🤷</div>
+              <h2 style={{fontSize:'2rem',fontWeight:900,color:'#eab308',marginBottom:8}}>No consensus</h2>
+              <p style={{color:'#7a6a8a',marginBottom:24,fontFamily:'Exo 2,sans-serif'}}>The vote was tied. No one was eliminated.</p>
+            </>
+          )}
+          <button className={`btn ${pvout?'btn-danger':'btn-primary'}`} onClick={()=>onVoteComplete(voted,elim,pvout)} style={{padding:'14px 40px',borderRadius:12,fontSize:'.95rem'}}>
+            {pvout?'End Game':'Continue →'}
+          </button>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ── GAME OVER ─────────────────────────────────────────────
+function GameOver({state,onPlayAgain}){
+  const isWin=state.gameResult==='win';const isImp=state.playerRole==='impostor';const stats=state.stats;
+  React.useEffect(()=>{isWin?(sound.playSuccess(),setTimeout(()=>sound.playSuccess(),600)):sound.playFail();sound.playCalm();},[]);
+  const wr=stats.totalGames>0?Math.round(stats.wins/stats.totalGames*100):0;
+  return(
+    <div className="layer" style={{minHeight:'100vh',display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',padding:'0 16px 80px'}}>
+      <div className="fade-in" style={{textAlign:'center',width:'100%',maxWidth:440}}>
+        <div className="floating" style={{fontSize:88,marginBottom:20}}>{isWin?isImp?'😈':'🏆':isImp?'👨‍🚀':'💀'}</div>
+        <h1 style={{fontSize:'3.5rem',fontWeight:900,marginBottom:10,background:isWin?'linear-gradient(135deg,#22c55e,#38bdf8)':'linear-gradient(135deg,#ef4444,#a855f7)',WebkitBackgroundClip:'text',WebkitTextFillColor:'transparent'}}>{isWin?'VICTORY!':'DEFEATED'}</h1>
+        <p style={{color:'#9d7bb8',marginBottom:24,fontFamily:'Exo 2,sans-serif',fontSize:'.95rem'}}>
+          {isWin&&isImp?'You deceived them all. Masterful.':isWin&&!isImp?'The impostor has been caught! Crew survives.':!isWin&&isImp?'They saw through your deception.':'The impostor wins this round.'}
+        </p>
+
+        <div className="glass" style={{padding:20,marginBottom:16}}>
+          <div style={{fontWeight:700,color:'#c084fc',marginBottom:14,textAlign:'center'}}>This Game</div>
+          {[['Task Score',`${state.totalTaskScore}/300`,'#a855f7'],['Your Role',isImp?'😈 Impostor':'👨‍🚀 Crewmate',isImp?'#ef4444':'#22c55e'],['Rounds Played',`${Math.max(1,state.round-1)}/${state.maxRounds}`,'#fff'],['Result',isWin?'✓ WIN':'✗ LOSS',isWin?'#22c55e':'#ef4444']].map(([l,v,c])=>(
+            <div key={l} style={{display:'flex',justifyContent:'space-between',padding:'6px 0',borderBottom:'1px solid rgba(168,85,247,.1)',fontSize:'.85rem',fontFamily:'Exo 2,sans-serif'}}>
+              <span style={{color:'#7a6a8a'}}>{l}</span><span style={{fontWeight:700,color:c}}>{v}</span>
+            </div>
+          ))}
+        </div>
+
+        <div className="glass" style={{padding:20,marginBottom:24}}>
+          <div style={{fontWeight:700,color:'#c084fc',marginBottom:14,textAlign:'center'}}>Career Stats</div>
+          <div style={{display:'grid',gridTemplateColumns:'repeat(3,1fr)',gap:10}}>
+            {[['Games',stats.totalGames,'#a855f7'],['Wins',stats.wins,'#22c55e'],['Win%',wr+'%','#38bdf8'],['Streak',stats.currentStreak,'#f97316'],['Best',stats.bestStreak,'#eab308'],['ImpWins',stats.impostorWins,'#ef4444']].map(([l,v,c])=>(
+              <div key={l} className="glass" style={{padding:'10px 6px',textAlign:'center'}}>
+                <div style={{fontSize:'1.5rem',fontWeight:900,color:c}}>{v}</div>
+                <div style={{fontSize:'.6rem',color:'#7a6a8a',marginTop:2}}>{l}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div style={{display:'flex',flexDirection:'column',gap:10}}>
+          <button className="btn btn-primary" onClick={onPlayAgain} style={{padding:'14px',fontSize:'1rem',borderRadius:12}}>⚡ Play Again</button>
+          <button onClick={onPlayAgain} className="btn" style={{padding:'10px',borderRadius:10,background:'transparent',border:'1px solid #333',color:'#7a6a8a',fontSize:'.8rem',fontFamily:'Exo 2,sans-serif'}}>Change Name / Color</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ── MAIN GAME ─────────────────────────────────────────────
+function App(){
+  const [state,setState]=React.useState({phase:'intro',playerName:'',playerRole:null,playerColor:PLAYER_COLORS[0],round:1,maxRounds:3,fakePlayers:[],taskScore:0,totalTaskScore:0,specialEvent:'normal',gameResult:null,stats:loadStats()});
+  const [muted,setMuted]=React.useState(false);
+
+  React.useEffect(()=>{const cleanup=initCanvas();return cleanup;},[]);
+
+  const buildFakePlayers=(name,color)=>{const used=new Set([name]);const names=[...FAKE_NAMES].sort(()=>Math.random()-.5);const cols=[...PLAYER_COLORS].filter(c=>c!==color).sort(()=>Math.random()-.5);const count=5+Math.floor(Math.random()*4);const fps=[];for(let i=0;i<count;i++)fps.push({id:`f${i}`,name:names[i]||`Pilot${i}`,color:cols[i]||'#fff',role:'crewmate',isEliminated:false,suspicion:10+Math.floor(Math.random()*30),typingDelay:500+Math.random()*2000});const impCount=Math.random()>.7?2:1;for(let i=0;i<Math.min(impCount,fps.length);i++){fps[i].role='impostor';fps[i].suspicion=5+Math.floor(Math.random()*15);}return fps.sort(()=>Math.random()-.5);};
+
+  const handleStart=(name,color)=>{
+    const fps=buildFakePlayers(name,color);
+    const events=['normal','normal','normal','double-impostor','no-voting','chaos-mode'];
+    const ev=events[Math.floor(Math.random()*events.length)];
+    setState(p=>({...p,playerName:name,playerColor:color,fakePlayers:fps,specialEvent:ev,phase:'lobby',round:1,totalTaskScore:0,taskScore:0,gameResult:null}));
+    setTimeout(()=>{const role=Math.random()<.33?'impostor':'crewmate';setState(p=>({...p,playerRole:role,phase:'role-reveal'}));},1500);
+  };
+
+  const handleTaskComplete=(score,chat)=>{
+    setState(p=>{
+      const newTotal=p.totalTaskScore+score;
+      if(p.specialEvent==='no-voting'){
+        if(p.round>=p.maxRounds){
+          const cw=newTotal>=150;const pw=p.playerRole==='impostor'?!cw:cw;const ns=updateStats(p.stats,pw,p.playerRole);saveStats(ns);
+          return{...p,totalTaskScore:newTotal,taskScore:score,gameResult:pw?'win':'lose',stats:ns,phase:'game-over'};
+        }
+        return{...p,totalTaskScore:newTotal,taskScore:score,round:p.round+1,phase:'task'};
+      }
+      return{...p,totalTaskScore:newTotal,taskScore:score,phase:'voting'};
+    });
+  };
+
+  const handleVoteComplete=(votedId,eliminated,playerVotedOut)=>{
+    setState(p=>{
+      if(playerVotedOut){const ns=updateStats(p.stats,false,p.playerRole);saveStats(ns);return{...p,stats:ns,gameResult:'lose',phase:'game-over'};}
+      const fp=p.fakePlayers.map(pl=>eliminated&&pl.id===eliminated.id?{...pl,isEliminated:true}:pl);
+      const withSusp=fp.map(pl=>{if(pl.isEliminated)return pl;return{...pl,suspicion:Math.min(90,pl.suspicion+(pl.role==='impostor'?15+Math.random()*10:Math.random()*15))};});
+      const remImp=withSusp.filter(pl=>!pl.isEliminated&&pl.role==='impostor');
+      const total=withSusp.filter(pl=>!pl.isEliminated).length;
+      let result=null;
+      if(eliminated?.role==='impostor'&&remImp.length===0){result=p.playerRole==='crewmate'?'win':'lose';}
+      if(total>0&&remImp.length>=Math.ceil(total/2)){result=p.playerRole==='impostor'?'win':'lose';}
+      if(p.round>=p.maxRounds&&!result){result=p.playerRole==='impostor'?'win':'lose';}
+      if(result!==null){const ns=updateStats(p.stats,result==='win',p.playerRole);saveStats(ns);return{...p,fakePlayers:withSusp,gameResult:result,stats:ns,phase:'game-over'};}
+      return{...p,fakePlayers:withSusp,round:p.round+1,phase:'task'};
+    });
+  };
+
+  const handlePlayAgain=()=>setState(p=>({phase:'intro',playerName:p.playerName,playerRole:null,playerColor:p.playerColor,round:1,maxRounds:3,fakePlayers:[],taskScore:0,totalTaskScore:0,specialEvent:'normal',gameResult:null,stats:p.stats}));
+
+  const updateStats=(stats,win,role)=>({...stats,totalGames:stats.totalGames+1,wins:win?stats.wins+1:stats.wins,losses:win?stats.losses:stats.losses+1,currentStreak:win?stats.currentStreak+1:0,bestStreak:win?Math.max(stats.bestStreak,stats.currentStreak+1):stats.bestStreak,impostorWins:win&&role==='impostor'?stats.impostorWins+1:stats.impostorWins,crewmateWins:win&&role==='crewmate'?stats.crewmateWins+1:stats.crewmateWins});
+
+  return(
+    <div>
+      {/* Sound toggle */}
+      <button onClick={()=>{const m=sound.toggle();setMuted(m);sound.playClick();}} style={{position:'fixed',top:14,right:14,zIndex:200,width:38,height:38,borderRadius:'50%',background:'rgba(255,255,255,.05)',border:'1px solid rgba(168,85,247,.3)',cursor:'pointer',fontSize:18,display:'flex',alignItems:'center',justifyContent:'center',backdropFilter:'blur(8px)'}}>
+        {muted?'🔇':'🔊'}
+      </button>
+      {/* Special event badge */}
+      {state.phase==='task'&&state.specialEvent!=='normal'&&(
+        <div style={{position:'fixed',top:14,left:'50%',transform:'translateX(-50%)',zIndex:100,padding:'5px 14px',borderRadius:999,background:'rgba(239,68,68,.15)',border:'1px solid #ef4444',color:'#ef4444',fontSize:'.7rem',fontWeight:700,backdropFilter:'blur(8px)'}}>
+          {state.specialEvent==='double-impostor'?'⚠️ DOUBLE IMPOSTOR':state.specialEvent==='no-voting'?'🚫 NO VOTING':state.specialEvent==='chaos-mode'?'🔥 CHAOS MODE':''}
+        </div>
+      )}
+      {state.phase==='intro'&&<IntroScreen onStart={handleStart}/>}
+      {state.phase==='lobby'&&<LobbyScreen/>}
+      {state.phase==='role-reveal'&&state.playerRole&&<RoleReveal role={state.playerRole} playerName={state.playerName} playerColor={state.playerColor} specialEvent={state.specialEvent} onContinue={()=>setState(p=>({...p,phase:'task'}))}/>}
+      {state.phase==='task'&&<TaskPhase state={state} onTaskComplete={handleTaskComplete}/>}
+      {state.phase==='voting'&&<VotingPhase state={state} onVoteComplete={handleVoteComplete}/>}
+      {state.phase==='game-over'&&<GameOver state={state} onPlayAgain={handlePlayAgain}/>}
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(React.createElement(App));
+</script>
+</body>
+</html>
